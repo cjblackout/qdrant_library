@@ -2,31 +2,36 @@ import flet as ft
 import os
 from retrieve import retrieve
 
-DEFAULT_FLET_PATH = ''  # or 'ui/path'
+#default values for Flet
+DEFAULT_FLET_PATH = ''
 DEFAULT_FLET_PORT = 8080
 
 def main(page: ft.Page):
     def search(e):
-        if new_task.value != "":
-            results = retrieve(new_task.value)
-            text1.value = results[0].payload["book_title"].replace("-", " ") + " with a match of  " + str(round(results[0].score*100)) + "%"
-            cards.controls[0].content.disabled = False
-            text2.value = results[1].payload["book_title"].replace("-", " ") + " with a match of  " + str(round(results[1].score*100)) + "%"
-            cards.controls[1].content.disabled = False
-            text3.value = results[2].payload["book_title"].replace("-", " ") + " with a match of  " + str(round(results[2].score*100)) + "%"
-            cards.controls[2].content.disabled = False
-        cards.controls[0].content.content.update()
-        cards.controls[1].content.content.update()
-        cards.controls[2].content.content.update()
+        if new_task.value != "":  #If the search bar is not empty
+            results = retrieve(new_task.value)  #Get the results from the retrieve function
+            for i in range(len(results)):  #Update the cards with the results
+                cards.controls[i].content.disabled = False  #Enable the card
+                cards.controls[i].content.content.value = results[i]  #Update the card with the result
+                cards.controls[i].content.content.update()  #Update the card
         page.update()
 
-    new_task = ft.TextField(hint_text="Enter sentence to be searched")
-
+    #Set the title and the top markdown
     page.title = "Book Search"
+    top_markdown = "Made by Rishabh Saxena for [qdrant.tech](https://qdrant.tech/) with [Flet](https://flet.dev), Sentence Transformers and Python. [Source Code](https://github.com/cjblackout/qdrant_library), [Dataset](https://huggingface.co/datasets/bookcorpusopen)."
+    page.add(ft.Markdown(
+            top_markdown,
+            selectable=True,
+            extension_set=ft.MarkdownExtensionSet.GITHUB_WEB,
+            on_tap_link=lambda e: page.launch_url(e.data),
+        ))
+    
+    #Add the search bar and the cards
+    new_task = ft.TextField(hint_text="Enter sentence to be searched", on_submit=search)
     page.add(new_task, ft.FloatingActionButton(icon=ft.icons.SEARCH, on_click=search))
-    text1 = ft.Text()
-    text2 = ft.Text()
-    text3 = ft.Text()
+    text1 = ft.Text(size=20,color=ft.colors.BLUE_GREY_400,weight=ft.FontWeight.BOLD,)
+    text2 = ft.Text(size=20,color=ft.colors.BLUE_GREY_400,weight=ft.FontWeight.BOLD,)
+    text3 = ft.Text(size=20,color=ft.colors.BLUE_GREY_400,weight=ft.FontWeight.BOLD,)
     cards = ft.Column([
             ft.Card(
                         content=ft.Container(
@@ -55,8 +60,7 @@ def main(page: ft.Page):
         ])
     page.add(cards)
 
-#ft.app(target=)
 if __name__ == "__main__":
-    flet_path = os.getenv("FLET_PATH", DEFAULT_FLET_PATH)
-    flet_port = int(os.getenv("FLET_PORT", DEFAULT_FLET_PORT))
-    ft.app(name=flet_path, target=main, view=None, port=flet_port)
+    flet_path = os.getenv("FLET_PATH", DEFAULT_FLET_PATH)  #Get the path to the flet file
+    flet_port = int(os.getenv("FLET_PORT", DEFAULT_FLET_PORT))  #Get the port to run the flet app on
+    ft.app(name=flet_path, target=main, view=None, port=flet_port)   #Run the flet app

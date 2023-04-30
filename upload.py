@@ -8,12 +8,12 @@ from dotenv import dotenv_values
 
 config = dotenv_values(".env")
 
-DIMENSION = 384
-COLLECTION_NAME = "books_library"
-API_KEY = config["API_KEY"]
-SERVER_URL = config["SERVER_URL"]
+DIMENSION = 384  #Dimension of the vectors of the transformer
+COLLECTION_NAME = "books_library"  #Name of the collection on the server
+API_KEY = config["API_KEY"]  #API Key for the server
+SERVER_URL = config["SERVER_URL"]  #URL of the server
 
-# Load the BERT tokenizer and model
+# Load the model
 model = SentenceTransformer('sentence-transformers/all-MiniLM-L6-v2')
 
 # Define a function to extract sentences from the 'text' field of the bookcorpus dataset
@@ -56,8 +56,8 @@ for i, book in enumerate(dataset):
     # Extract sentences from the 'text' field of the book
     sentences = extract_sentences(book["text"])
     
+    # Encode each sentence into a 768-dimensional vector using the model and upsert it into Qdrant
     vectors = []
-    # Encode each sentence into a 768-dimensional vector using the BERT model and upsert it into Qdrant
     for j, sentence in enumerate(sentences):
         # Encode the sentence into a vector and append it to the vectors list
         vector = model.encode(sentence)
