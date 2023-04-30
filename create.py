@@ -1,13 +1,19 @@
 import qdrant_client
 from qdrant_client.http import models
+from dotenv import dotenv_values
 
 DIMENSION = 384
 
+config = dotenv_values(".env")
+
 # Initialize the Qdrant client
+API_KEY = config["API_KEY"]
+SERVER_URL = config["SERVER_URL"]
+
 client = qdrant_client.QdrantClient(
-    url="https://72392111-a4ed-486c-9334-596e82942ef4.us-east-1-0.aws.cloud.qdrant.io:6333", 
+    url=SERVER_URL, 
     prefer_grpc=True,
-    api_key="LVWBlNWbz76iBgxzGBGqx12fgDivyhQp72l1Y3XglR_0f9TBSVGZXg",
+    api_key=API_KEY,
 )
 
 # Recreate the collection with the appropriate vector size and distance metric
