@@ -1,6 +1,7 @@
 import qdrant_client
 from sentence_transformers import SentenceTransformer
 from dotenv import dotenv_values
+import gc
 
 COLLECTION_NAME = "books_library"  #Name of the collection on the server
 DIMENSION = 384  #Dimension of the vectors of the transformer
@@ -29,6 +30,16 @@ def retrieve(query_sentence):
     )  #Search the collection for the query vector
 
     titles = {results[i].payload["book_title"].replace("-", " ").title(): results[i].score for i in range(len(results))}   #make a dictionary of titles and scores
+    
+    del model
+    del query_vector
+    del results
+    del client
+    del config
+    del SERVER_URL
+    del API_KEY
+    del query_sentence
+    gc.collect()
 
     return list(set([title + " with a match of " + str(round(titles[title]*100)) + "%" for title in titles]))  #return the titles with their scores
 

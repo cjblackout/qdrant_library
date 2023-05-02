@@ -1,6 +1,7 @@
 import flet as ft
 import os
 from retrieve import retrieve
+import gc
 
 #default values for Flet
 DEFAULT_FLET_PATH = ''
@@ -14,6 +15,11 @@ def main(page: ft.Page):
                 cards.controls[i].content.disabled = False  #Enable the card
                 cards.controls[i].content.content.value = results[i]  #Update the card with the result
                 cards.controls[i].content.content.update()  #Update the card
+
+        del e
+        del results
+        gc.collect()
+
         page.update()
 
     #Set the title and the top markdown
